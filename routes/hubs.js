@@ -1,5 +1,5 @@
 const express = require('express');
-const { getHubs, getProjects, getProjectContents, getTwoLeggedToken} = require('../services/aps.js');
+const { getTwoLeggedToken, getHubs, getProjects, getProjectContents, getItemVersions} = require('../services/aps.js');
 
 let router = express.Router();
 
@@ -43,5 +43,20 @@ router.get('/api/hubs/:hub_id/projects/:project_id/contents', async function (re
         next(err);
     }
 });
+
+router.get('/api/hubs/:hub_id/projects/:project_id/contents/:item_id/versions', async function (req, res, next) {
+    try {
+        const accessToken = await getTwoLeggedToken();
+        const versions = await getItemVersions(
+            req.params.project_id, 
+            req.params.item_id, 
+            accessToken.access_token
+        );
+        res.json(versions);
+    } catch (err) {
+        next(err);
+    }
+});
+
 
 module.exports = router;
